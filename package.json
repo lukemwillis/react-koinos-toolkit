@@ -71,7 +71,7 @@
     ]
   },
   "scripts": {
-    "prepublishOnly": "babel ./src --out-dir ./dist -s inline --extensions \".ts,.tsx\""
+    "prepublishOnly": "babel ./src --out-dir ./dist -s inline --extensions \".ts,.tsx\" --copy-files"
   },
   "peerDependencies": {
     "react": "^18.2.0"
