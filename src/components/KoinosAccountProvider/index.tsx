@@ -4,14 +4,25 @@ import { NameServiceProvider } from "./NameServiceProvider";
 import { ProfileProvider } from "./ProfileProvider";
 import { ChakraProvider } from "@chakra-ui/react";
 
-export const KoinosAccountProvider = ({ children }) => {
+export const KoinosAccountProvider = ({
+  defaultRpcUrl,
+  kapNameServiceAddress,
+  kapProfileAddress,
+  children,
+}) => {
   return (
     <ChakraProvider>
-      <AccountProvider>
-        <NameServiceProvider>
-          <ProfileProvider>{children}</ProfileProvider>
+      <AccountProvider defaultRpcUrl={defaultRpcUrl}>
+        <NameServiceProvider kapNameServiceAddress={kapNameServiceAddress}>
+          <ProfileProvider kapProfileAddress={kapProfileAddress}>
+            {children}
+          </ProfileProvider>
         </NameServiceProvider>
       </AccountProvider>
     </ChakraProvider>
   );
 };
+
+export { useAccount } from "./AccountProvider";
+export { useNameService } from "./NameServiceProvider";
+export { useProfile } from "./ProfileProvider";

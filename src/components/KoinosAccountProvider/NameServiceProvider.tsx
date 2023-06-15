@@ -8,7 +8,6 @@ import React, {
 import { Contract, utils } from "koilib";
 import { useAccount } from "./AccountProvider";
 import namerserviceAbi from "../../abis/collections-abi.json";
-import { useBoolean, useToast } from "@chakra-ui/react";
 
 export type NameObject = {
   name: string;
@@ -35,66 +34,62 @@ export const NameServiceContext = createContext<NameServiceContextType>({
 export const useNameService = () => useContext(NameServiceContext);
 
 export const NameServiceProvider = ({
+  kapNameServiceAddress,
   children,
 }: {
+  kapNameServiceAddress: string;
   children: React.ReactNode;
 }): JSX.Element => {
   const { address, provider, signer } = useAccount();
-  const [isMinting, setIsMinting] = useBoolean(false);
-  const [isRenewing, setIsRenewing] = useBoolean(false);
-  const [isTransferring, setIsTransferring] = useBoolean(false);
-  const toast = useToast();
 
-  const { getOwner, getName, fetchNames } =
-    useMemo(() => {
-      const nameService = new Contract({
-        id: process.env.NEXT_PUBLIC_NAME_SERVICE_ADDR,
-        abi: namerserviceAbi,
-        provider,
-        signer,
-      });
-
+  const { getOwner, getName, fetchNames } = useMemo(() => {
+    if (!kapNameServiceAddress) {
       return {
-        getOwner: async (name: string) => {
-          const buffer = new TextEncoder().encode(name);
-          const token_id = "0x" + utils.toHexString(buffer);
-          const { result } = await nameService!.functions.owner_of<{
-            value: string;
-          }>({
-            token_id,
-          });
-          return result;
-        },
-        getName: async (name: string) => {
-          const { result } = await nameService!.functions.get_name<NameObject>({
-            name,
-          });
-          return result;
-        },
-        fetchNames: async () => {
-          const { result } = await nameService!.functions.get_names<{
-            names: NameObject[];
-          }>({
-            owner: address,
-            nameOffset: "",
-            descending: false,
-            limit: 100,
-          });
-
-          if (result?.names && result.names.length > 0) {
-            setNames(result.names);
-          }
-        },
+        getOwner: async () => undefined,
+        getName: async () => undefined,
+        fetchNames: async () => undefined,
       };
-    }, [
-      address,
+    }
+    const nameService = new Contract({
+      id: kapNameServiceAddress,
+      abi: namerserviceAbi,
       provider,
-      setIsMinting,
-      setIsRenewing,
-      setIsTransferring,
       signer,
-      toast,
-    ]);
+    });
+
+    return {
+      getOwner: async (name: string) => {
+        const buffer = new TextEncoder().encode(name);
+        const token_id = "0x" + utils.toHexString(buffer);
+        const { result } = await nameService!.functions.owner_of<{
+          value: string;
+        }>({
+          token_id,
+        });
+        return result;
+      },
+      getName: async (name: string) => {
+        const { result } = await nameService!.functions.get_name<NameObject>({
+          name,
+        });
+        return result;
+      },
+      fetchNames: async () => {
+        const { result } = await nameService!.functions.get_names<{
+          names: NameObject[];
+        }>({
+          owner: address,
+          nameOffset: "",
+          descending: false,
+          limit: 100,
+        });
+
+        if (result?.names && result.names.length > 0) {
+          setNames(result.names);
+        }
+      },
+    };
+  }, [address, provider, signer]);
 
   const [names, setNames] = useState<NameObject[]>([]);
   useEffect(() => {

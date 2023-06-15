@@ -29,7 +29,7 @@
             "read_only": true
         }
     },
-    "types": {
+    "koilib_types": {
         "nested": {
             "profile": {
                 "nested": {
