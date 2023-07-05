@@ -75,7 +75,6 @@ export const NameServiceProvider = ({
         return result;
       },
       fetchNames: async () => {
-        console.log({kapNameServiceAddress,address,provider,signer});
         const { result } = await nameService!.functions.get_names<{
           names: NameObject[];
         }>({
