@@ -75,6 +75,7 @@ export const NameServiceProvider = ({
         return result;
       },
       fetchNames: async () => {
+        console.log({kapNameServiceAddress,address,provider,signer});
         const { result } = await nameService!.functions.get_names<{
           names: NameObject[];
         }>({
@@ -89,7 +90,7 @@ export const NameServiceProvider = ({
         }
       },
     };
-  }, [address, provider, signer]);
+  }, [kapNameServiceAddress, address, provider, signer]);
 
   const [names, setNames] = useState<NameObject[]>([]);
   useEffect(() => {

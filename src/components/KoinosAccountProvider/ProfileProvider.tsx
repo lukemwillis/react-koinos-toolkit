@@ -94,7 +94,7 @@ export const ProfileProvider = ({
     return {
       fetchProfile,
     };
-  }, [address, provider]);
+  }, [kapProfileAddress, address, provider, signer]);
 
   useEffect(() => {
     if (address) {
